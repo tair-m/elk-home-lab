@@ -1,63 +1,63 @@
 # :microscope: ELK Stack v9.2.2 & Suricata IDS Home Lab
 
-## Обзор проекта
-В этом репозитории собраны конфигурационные файлы ELK (Docker) и методические материалы по развертыванию моей домашней SIEM-лаборатории. Проект демонстрирует процесс интеграции сетевого IDS-сенсора и мониторинга конечных точек в единую систему анализа логов.
+## Project Overview
+This repository contains ELK (Docker) configuration files and methodological materials for deploying a personal Home SIEM Lab. The project demonstrates the integration of a network IDS sensor and endpoint monitoring into a unified log analysis system.
 
-> При создании проекта я опирался на архитектурные принципы, описанные в руководстве **elkninja / elastic-stack-docker-part-two**, адаптировав их под актуальную версию 9.2.2.
+> During the development of this project, I relied on the architectural principles described in the elkninja / elastic-stack-docker-part-two guide, adapting them for the current v9.2.2.
 
-### Что включено в этот репозиторий
+### What's Included in This Repository
 
-Я выложил только те части кода, которые были кастомизированы для работы лаборатории:
+I have shared only the parts of the code that were customized for the laboratory environment:
 
-* docker-compose.yml, kibana.yml, .env — настроенный стек v9.2.2.
-* Методология: Описание процесса интеграции компонентов.
+* docker-compose.yml, kibana.yml, .env — pre-configured stack for v9.2.2.
+* Methodology: A detailed description of the component integration process.
 
-### Архитектурное решение:
-* **Ядро системы (Docker):** Elasticsearch, Kibana и Fleet Server развернуты в контейнерах для обеспечения модульности и быстрого обновления.
-* **Сенсор IDS (Native Windows):** Suricata установлена напрямую на хостовую ОС, что позволяет прямое взаимодействие с сетевым интерфейсом через **Npcap**. Данное решение гарантирует захват трафика без потерь и конфликтов с виртуальными сетями Docker.
-* **Гибридная среда VirtualBox:**
-    * **Kali Linux:** Основной инструмент для проведения атак и тестирования сигнатур.
-    * **Ubuntu Server:** Дополнительный узел мониторинга с установленным **Suricata** и **Elastic Agent**.
-    * **VulnHub VMs:** Уязвимые машины, используемые в качестве целей для отработки навыков детектирования реальных эксплойтов.
+### Architectural Solution
+* **System Core (Docker):** Elasticsearch, Kibana, and Fleet Server are deployed in containers to ensure modularity and easy updates.
+* **IDS Sensor (Native Windows):** Suricata is installed directly on the host OS, allowing for direct interaction with the network interface via Npcap. This solution guarantees packet capture without loss or conflicts with Docker virtual networks.
+* **Hybrid VirtualBox Environment:**
+    * **Kali Linux:** The primary tool for launching attacks and testing signatures.
+    * **Ubuntu Server:** An additional monitoring node with Suricata and Elastic Agent installed.
+    * **VulnHub VMs:** Vulnerable machines used as targets to practice detecting real-world exploits.
 
-### Технологический стек
+### Technology Stack
 
 **1. SIEM Core (Containerized)**
 
-> Центральный узел обработки и визуализации данных, развернутый в изолированной среде:
+> Central data processing and visualization hub deployed in an isolated environment:
 
-* Elastic Stack v9.2.2 (Docker): Elasticsearch для хранения индексов и Kibana для аналитики.
-* Fleet Server: Управление жизненным циклом агентов и политиками сбора данных.
-* Docker Desktop: Среда оркестрации контейнеров SIEM-ядра.
+* Elastic Stack v9.2.2 (Docker): Elasticsearch for index storage and Kibana for analytics.
+* Fleet Server: Management of agent lifecycles and data collection policies.
+* Docker Desktop: Container orchestration environment for the SIEM core.
 
 **2. Detection & Monitoring Layer (Host & Agents)**
 
-> Компоненты, отвечающие за обнаружение угроз на уровне сетевого трафика и конечных точек:
+> Components responsible for threat detection at the network traffic and endpoint levels:
 
 * Suricata IDS:
 
-    * Windows Native: Установка на основной системе для прямого доступа к сетевому интерфейсу (через Npcap) и анализа трафика VirtualBox.
-    * Ubuntu Server: Дополнительный сенсор внутри виртуальной сети.
+    * Windows Native: Installed on the host system for direct network interface access (via Npcap) and VirtualBox traffic analysis.
+    * Ubuntu Server: An additional sensor within the virtual network.
 
-* ET Open Ruleset: Набор правил от Emerging Threats для сигнатурного анализа.
-* Elastic Agent (Fleet-managed): Агенты для сбора системных логов и событий eve.json от Suricata.
+* ET Open Ruleset: A signature-based analysis rule set from Emerging Threats.
+* Elastic Agent (Fleet-managed): Agents for collecting system logs and Suricata eve.json events.
 
 **3. Attack & Lab Environment (Virtualization)**
-> Изолированная среда для генерации трафика и тестирования эксплойтов:
+> Isolated environment for traffic generation and exploit testing:
 
-* VirtualBox: Гипервизор для запуска лабораторных стендов.
-* Kali Linux: Инструментарий для проведения пентестов.
-* VulnHub Target Machines: Целевые уязвимые системы.
-* Ubuntu 22.04 LTS: Вспомогательный серверный узел.
+* VirtualBox: Hypervisor for running lab environments.
+* Kali Linux: Toolset for conducting penetration tests.
+* VulnHub Target Machines: Target vulnerable systems.
+* Ubuntu 22.04 LTS: Auxiliary server node.
 
 ---
 
-### Пошаговое руководство
+### Step-by-Step Guide
 
 1. Подготовка SIEM (Docker)
 
-    * Запустить стек: docker-compose up -d.
-    * В интерфейсе Kibana активировать Fleet Server и создать политики сбора данных (подробнее у elkninja и Evermight Systems youtube chanel).
+    * Deploy the stack: docker-compose up -d.
+    * Activate Fleet Server in the Kibana interface and create data collection policies (refer to elkninja and Evermight Systems YouTube channels for detailed instructions).
   
 <p align="center">
   <img src="img/1-Docker.png" width="1200" title="Docker">
@@ -67,29 +67,29 @@
   <img src="img/2-Fleet-server.png" width="1200" title="Fleet-server">
 </p>
 
-2. Настройка сенсора (Windows Host)
+2. Sensor Configuration (Windows Host)
 
-    * Установить Suricata и Npcap на основную систему (подробнее у Hacker Sploit youtube chanel и в официальной документации suricata).
-    * Подключить ET Open ruleset для актуальных сигнатур.
-    * Убедиться, что логи пишутся в формате eve.json (папка C:\Program Files\Suricata\log).
-    * Установить Elastic Agent на Windows, привязав их к Fleet Server.
+    * Install Suricata and Npcap on the host system (refer to Hacker Sploit YouTube channel and the official Suricata documentation for details).
+    * Enable the ET Open ruleset for up-to-date threat signatures.
+    * Verify that logs are being generated in eve.json format (default path: C:\Program Files\Suricata\log).
+    * Install Elastic Agent on Windows and enroll it into the Fleet Server.
   
 <p align="center">
   <img src="img/3-Fleet-Agents.png" width="1200" title="Fleet-Agents">
 </p>
 
-> Я установил интеграцию Windows и Suricata.
+> I have successfully configured both Windows and Suricata integrations.
 
 <p align="center">
   <img src="img/4-Fleet-Windows.png" width="1200" title="Fleet-Windows">
 </p>
 
-4. Инфраструктура VirtualBox
+4. VirtualBox Infrastructure
 
-    * Настроить Host-only Network в VirtualBox. Добавить DHCP Server.
-    * Установить Kali Linux и Ubuntu Server. Настроить сетевые адаптеры машин (Kali, Ubuntu) в режим Bridged mode и Host-only Network с включенным Promiscuous Mode, чтобы Suricata видела их трафик.
-    * Установить Elastic Agent на Ubuntu, привязав их к Fleet Server.
-    * Установить уязвимые виртуальные машины с Vulnhub. Настроить их сетевой адаптер в режим Network на Host-only Network с включенным Promiscuous Mode.
+    * Configure a Host-only Network in VirtualBox and enable the DHCP Server.
+    * Install Kali Linux and Ubuntu Server. Configure network adapters for these VMs (Kali, Ubuntu) in Bridged mode and Host-only Network with Promiscuous Mode set to "Allow All" so that Suricata can intercept their traffic.
+    * Install Elastic Agent on Ubuntu and enroll it into the Fleet Server.
+    * Deploy vulnerable virtual machines from Vulnhub. Set their network adapters to the Host-only Network with Promiscuous Mode enabled.
 
 <p align="center">
   <img src="img/5-Fleet-Ubuntu.png" width="1200" title="Fleet-Ubuntu">
@@ -107,11 +107,11 @@
   <img src="img/8-DHCP-Settings.png" width="1200" title="DHCP-Settings">
 </p>
 
-6. Аналитика и Тесты
+6. Analytics and Testing
 
-    * Провести сканирование (например, nmap) с Kali Linux на уязвимую машину.
-    * Проверить появление алертов в Kibana.
-    * Настроить Dashboards для визуализации инцидентов.
+    * Perform a network scan (e.g., using nmap) from Kali Linux against a target vulnerable machine.
+    * Verify that alerts are being triggered and displayed in Kibana.
+    * Configure Dashboards for effective incident visualization and monitoring.
 
 <p align="center">
   <img src="img/9-Analytics.png" width="1200" title="Analytics">
